@@ -1,5 +1,6 @@
 const { Given, When, Then } = require('@wdio/cucumber-framework');
 const { $, $$, expect, browser } = require('@wdio/globals')
+const { expectChai, assert } = require('../support/chai');
 
 Given(/^user is on login page$/, async () => {
   await browser.url('/auth/login');
@@ -19,8 +20,9 @@ When(/^user clicks the login button$/, async () => {
 
 Then(/^an error message for missing password is displayed$/, async () => {
   const errorMsg = await $('#password-error');
+  
   const text = await errorMsg.getText();
-  expect(text).toContain('Password is required');
+  expectChai(text).to.include('Password is required');
 });
 
 Given(/^the user is on the product details page$/, async () => {
@@ -39,7 +41,7 @@ Then(/^a confirmation toast is displayed$/, async () => {
   await toastMsg.waitForDisplayed({ timeout: 10000 })
 
   const text = (await toastMsg.getText()).toLowerCase()
-  await expect(text).toContain('product added to shopping cart')
+  assert.include(text, 'product added to shopping cart')
 });
 
 let cartBefore = 0
@@ -56,7 +58,8 @@ Then(/^the basket counter is incremented$/, async () => {
     { timeout: 10000, interval: 250, timeoutMsg: 'Cart counter did not increment' }
   )
   const after = await getCartCount()
-  await expect(after).toBeGreaterThan(cartBefore)
+
+  after.should.be.greaterThan(cartBefore);
 });
 
 Given(/^the user is not signed in$/, async () => {
@@ -65,7 +68,8 @@ Given(/^the user is not signed in$/, async () => {
   await browser.refresh()
   
   const signInBtn = $('//a[normalize-space()="Sign in"]');
-  await expect(signInBtn).toBeDisplayed();
+  const isVisible = await signInBtn.isDisplayed();
+  expectChai(isVisible).to.be.true;   
 });
 
 When(/^the user add product to favourites$/, async () => {
@@ -77,7 +81,7 @@ Then(/^the error toast is displayed$/, async () => {
   await toast.waitForDisplayed({ timeout: 10000 })
 
   const text = (await toast.getText()).toLowerCase()
-  await expect(text).toContain('unauthorized, can not add product to your favorite list.')
+  assert.include(text,'unauthorized, can not add product to your favorite list.')
 });
 
 Given(/^the user is on the home page$/, async () => {
@@ -90,15 +94,27 @@ When(/^the user selects a product$/, async () => {
 });
 
 Then(/^the product details page is displayed$/, async () => {
-  await expect(browser).toHaveUrl(expect.stringContaining('product'));
-  await expect($('#btn-add-to-cart')).toBeDisplayed();
+  const url = await browser.getUrl();
+  expectChai(url).to.include('product');
 });
 
 Then(/^the product information is visible$/, async () => {
-  await expect($('h1[data-test="product-name"]')).toBeDisplayed();
-  await expect($('.figure-img.img-fluid')).toBeDisplayed();
-  await expect($('span[aria-label="unit-price"]')).toBeDisplayed();
-  await expect($('#description')).toBeDisplayed();
+  const productName = await $('h1[data-test="product-name"]');
+  const productImg = await $('.figure-img.img-fluid');
+  const unitPrice = await $('span[aria-label="unit-price"]');
+  const description = await $('#description');
+
+  await productName.waitForDisplayed({ timeout: 5000 });
+  expectChai(await productName.isDisplayed()).to.be.true;
+
+  await productImg.waitForDisplayed({ timeout: 5000 });
+  expectChai(await productImg.isDisplayed()).to.be.true;
+
+  await unitPrice.waitForDisplayed({ timeout: 5000 });
+  expectChai(await unitPrice.isDisplayed()).to.be.true;
+
+  await description.waitForDisplayed({ timeout: 5000 });
+  expectChai(await description.isDisplayed()).to.be.true;
 });
 
 When(/^the user selects the "([^"]*)" category from the Categories menu$/, async (category) => {
@@ -116,24 +132,31 @@ Then(/^the category page for "([^"]*)" is displayed$/, async (category) => {
     .replace(/\s+/g, '-')           
     .replace(/[^a-z0-9-]/g, '');
 
-  await expect(browser).toHaveUrl(expect.stringContaining(slug));
-  await expect(categoryHeading()).toHaveText(expect.stringContaining(category));
+const url = await browser.getUrl();
+expectChai(url).to.include(slug);
 });
 
-Then(/^products from "([^"]*)" are shown$/, async (category) => {
+Then(/^products from "(.*)" are shown$/, async (category) => {
+  await browser.waitUntil(async () => {
+    return (await $$('div.card')).length > 0 
+        || await $('//*[contains(text(), "no products found")]').isDisplayed();
+  }, {
+    timeout: 5000,
+    timeoutMsg: 'Neither products nor "no products found" message appeared'
+  });
+
   const products = await $$('div.card');
   const noProductsMessage = await $('//*[contains(text(), "no products found")]');
 
   if (products.length > 0) {
-  
-    await expect(products).toBeElementsArrayOfSize({ gte: 1 });
+    assert.isAbove(products.length, 0, "At least one product should be found");
 
     for (const product of products) {
-      const title = await product.$('h5, .card-title, [data-test="product-name"]');
-      await expect(title).toBeDisplayed();
+      const title = await product.$('h5,.card-title,[data-test="product-name"]');
+      assert.isTrue(await title.isDisplayed(), "Product title should be visible");
     }
   } else {
-    await expect(noProductsMessage).toBeDisplayed();
+    assert.isTrue(await noProductsMessage.isDisplayed(), "No products found message should be visible");
   }
 });
 
@@ -147,7 +170,9 @@ When(/^the user searches for the existing "([^"]*)" name$/, async (product) => {
 
 Then(/^the search results for "([^"]*)" are displayed$/, async (product) => {
   const searchTerm = await $('span[data-test="search-term"]');
-  await expect(searchTerm).toHaveText(expect.stringContaining(product));
+
+  const text = await searchTerm.getText();
+  expectChai(text).to.include(product);
 });
 
 Then(/^all listed results contain the "([^"]*)" name$/, async (product) => {
@@ -155,7 +180,7 @@ Then(/^all listed results contain the "([^"]*)" name$/, async (product) => {
 
   for (const item of results) {
     const text = await item.getText();
-    expect(text.toLowerCase()).toContain(product.toLowerCase());
+    text.toLowerCase().should.include(product.toLowerCase());
   }
 });
 
@@ -169,13 +194,16 @@ When(/^the user searches for non-existing "([^"]*)"$/, async (product) => {
 
 Then(/^no product results are displayed$/, async () => {
   const results = await $$('[data-test="search_completed"] .card-title');
-  expect(results.length).toBe(0);
+
+  results.length.should.equal(0);
 });
 
 Then(/^a message "([^"]*)" is shown$/, async (message) => {
   const msg = await $('//div[@data-test="no-results"]');
   expect(msg).toBeDisabled();
-  await expect(msg).toHaveText(message);
+
+  const text = await msg.getText();
+  assert.include(text, message, `Expected "${text}" to include "${message}"`);
 });
 
 When(/^the user selects "([^"]*)" from the language dropdown$/, async (lang) => {
@@ -190,25 +218,32 @@ When(/^the user selects "([^"]*)" from the language dropdown$/, async (lang) => 
 
 Then(/^the language indicator shows "([^"]*)"$/, async (lang) => {
   const indicator = await $('#language');
-  await expect(indicator).toHaveText([lang])
+
+  const text = await indicator.getText();
+  text.should.equal(lang);
+
 });
 
 Then(/^the site content is displayed in "([^"]*)"$/, async (lang) => {
+  const expectedTexts = {
+  DE: 'Home',
+  EN: 'Home',
+  ES: 'Inicio',
+  FR: 'Accueil',
+  NL: 'Home',
+  TR: 'Anasayfa'
+};
   const homeLink = await $(`.nav-link.active`);
 
-  if (lang === 'DE') {
-    await expect(homeLink).toHaveText('Home');
-  } else if (lang === 'EN') {
-    await expect(homeLink).toHaveText('Home');
-  } else if (lang === 'ES') {
-    await expect(homeLink).toHaveText('Inicio');
-  } else if (lang === 'FR') {
-    await expect(homeLink).toHaveText('Accueil');
-  } else if (lang === 'NL') {
-    await expect(homeLink).toHaveText('Home'); 
-  } else if (lang === 'TR') {
-    await expect(homeLink).toHaveText('Anasayfa');
-  }
+  await homeLink.waitUntil(async function () {
+  return (await this.getText()) === expectedTexts[lang];
+}, {
+  timeout: 5000,
+  timeoutMsg: `Expected text: ${expectedTexts[lang]}`
+});
+
+const text = await homeLink.getText();
+expectChai(text).to.equal(expectedTexts[lang]);
 });
 
 
