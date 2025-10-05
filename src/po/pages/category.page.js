@@ -1,13 +1,10 @@
 class CategoryPage {
-
   get heading() {
     return $("//h1 | //h2");
   }
-
   get productCards() {
     return $$("div.card");
   }
-  
   get emptyState() {
     return $('//*[contains(text(), "no products found")]');
   }
@@ -20,9 +17,8 @@ class CategoryPage {
 
     const url = await browser.getUrl();
     await expect(url).toContain(slug);
-
-    await this.heading.waitForDisplayed({ timeout: 5000 });
-    return true;
+    
+    return this.heading.waitForDisplayed({ timeout: 5000 });
   }
 
   async waitForResults() {

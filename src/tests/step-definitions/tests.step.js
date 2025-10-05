@@ -27,7 +27,7 @@ Then(/^an error message for missing password is displayed$/, async () => {
 });
 
 Given(/^the user is on the product details page$/, async () => {
-  await homePage.openAnyProduct();
+  await homePage.openFirstProduct();
 });
 
 When(/^the user adds the product to the basket$/, async () => {
@@ -60,7 +60,7 @@ When(/^the user add product to favourites$/, async () => {
 });
 
 Then(/^the error toast is displayed$/, async () => {
-  const text = await productDetailsPage.getErrorToastText();
+  const text = await productDetailsPage.getToastText();
   assert.include(
     text,
     "unauthorized, can not add product to your favorite list."
@@ -72,7 +72,7 @@ Given(/^the user is on the home page$/, async () => {
 });
 
 When(/^the user selects a product$/, async () => {
-  await homePage.clickAnyProduct();
+  await homePage.firstProductLink.click();
 });
 
 Then(/^the product details page is displayed$/, async () => {
@@ -109,7 +109,7 @@ When(/^the user searches for the existing "([^"]*)" name$/, async (product) => {
 });
 
 Then(/^the search results for "([^"]*)" are displayed$/, async (product) => {
-  const text = await homePage.getSearchTerm();
+  const text = await homePage.searchTerm.getText();
   expectChai(text).to.include(product);
 });
 
@@ -124,12 +124,10 @@ When(/^the user searches for non-existing "([^"]*)"$/, async (product) => {
   await homePage.search(product);
 });
 
-Then(/^no product results are displayed$/, async () => {
-  const noResults = await homePage.hasNoResults();
-  expectChai(noResults).to.be.true;
-});
+Then(/^a no results message "([^"]*)" is shown$/, async(message) => {
+	const results = await homePage.searchReults;
+  expectChai(results.length).to.equal(0);
 
-Then(/^a message "([^"]*)" is shown$/, async (message) => {
   const text = await homePage.noResultsMsg.getText();
   assert.include(text, message, `Expected "${text}" to include "${message}"`);
 });

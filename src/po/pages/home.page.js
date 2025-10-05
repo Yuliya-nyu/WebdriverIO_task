@@ -1,11 +1,9 @@
 import BasePage from "./base.page";
 
 class HomePage extends BasePage {
-  
-  get anyProductLink() {
+  get firstProductLink() {
     return $('//a[contains(@href,"/product/")]');
   }
-
   get searchInput() {
     return $("#search-query");
   }
@@ -22,13 +20,9 @@ class HomePage extends BasePage {
     return $('//div[@data-test="no-results"]');
   }
 
-  async clickAnyProduct() {
-    await this.anyProductLink.click();
-  }
-
-  async openAnyProduct() {
+  async openFirstProduct() {
     await this.open("/");
-    await this.clickAnyProduct();
+    await this.firstProductLink.click();
   }
 
   async search(product) {
@@ -37,23 +31,13 @@ class HomePage extends BasePage {
     await this.searchBtn.click();
   }
 
-  async getSearchTerm() {
-    return this.searchTerm.getText();
-  }
-
   async getSearchResults() {
-    const elements = await this.searchReults; // массив элементов
     const texts = [];
 
-    for (const el of elements) {
+    for await (const el of this.searchReults) {
       texts.push(await el.getText());
     }
     return texts;
-  }
-
-  async hasNoResults() {
-    const results = await this.searchReults;
-    return results.length === 0;
   }
 }
 export default new HomePage();

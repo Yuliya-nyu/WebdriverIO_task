@@ -1,7 +1,6 @@
 import BasePage from "./base.page";
 
 class LoginPage extends BasePage {
-  
   get emailInput() {
     return $("#email");
   }
