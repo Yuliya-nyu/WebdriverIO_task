@@ -53,8 +53,7 @@ Feature: Practice software testing
   Scenario: Search for a non-existing product
     Given the user is on the home page
     When the user searches for non-existing "<product>"
-    Then no product results are displayed
-    And a message "<message>" is shown
+    Then a no results message "<message>" is shown
 
     Examples:
       | product | message                      |
