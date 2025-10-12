@@ -135,7 +135,15 @@ exports.config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter
-    reporters: ['spec'],
+    reporters: ['spec',
+        ["html-nice", {
+            outputDir: './reports/html',
+            filename: 'report.html',
+            reportTitle: 'HTML Report',
+            showInBrowser: true,
+            collapseTests: true,
+        }]
+    ],
 
     // If you are using Cucumber you need to specify the location of your step definitions.
     cucumberOpts: {
@@ -181,8 +189,16 @@ exports.config = {
      * @param {object} config wdio configuration object
      * @param {Array.<Object>} capabilities list of capabilities details
      */
-    // onPrepare: function (config, capabilities) {
-    // },
+    onPrepare: function (config, capabilities) {
+    const fs = require('fs');
+    const path = require('path');
+    const reportsDir = path.resolve(__dirname, '../../reports/html');
+
+        if (fs.existsSync(reportsDir)) {
+        fs.rmSync(reportsDir, { recursive: true, force: true });
+        console.log('html reports folder cleared before new run');
+        }
+    },
     /**
      * Gets executed before a worker process is spawned and can be used to initialize specific service
      * for that worker as well as modify runtime environments in an async fashion.
