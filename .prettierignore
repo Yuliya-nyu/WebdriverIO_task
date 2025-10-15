@@ -1,0 +1,6 @@
+node_modules/
+reports/
+build/
+coverage/
+htmlscreenshots
+package-lock.json

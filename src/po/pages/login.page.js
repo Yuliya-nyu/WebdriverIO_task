@@ -1,21 +1,21 @@
-import BasePage from "./base.page";
+import BasePage from './base.page';
 
 class LoginPage extends BasePage {
   get emailInput() {
-    return $("#email");
+    return $('#email');
   }
   get passwordInput() {
-    return $("#password");
+    return $('#password');
   }
   get submitBtn() {
-    return $(".btnSubmit");
+    return $('.btnSubmit');
   }
   get errorMsg() {
-    return $("#password-error");
+    return $('#password-error');
   }
 
   async open() {
-    await super.open("/auth/login");
+    await super.open('/auth/login');
   }
 
   async getErrorMessage() {

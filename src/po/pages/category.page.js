@@ -1,9 +1,9 @@
 class CategoryPage {
   get heading() {
-    return $("//h1 | //h2");
+    return $('//h1 | //h2');
   }
   get productCards() {
-    return $$("div.card");
+    return $$('div.card');
   }
   get emptyState() {
     return $('//*[contains(text(), "no products found")]');
@@ -12,12 +12,12 @@ class CategoryPage {
   async isCategoryDisplayed(category) {
     const slug = category
       .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]/g, "");
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '');
 
     const url = await browser.getUrl();
     await expect(url).toContain(slug);
-    
+
     return this.heading.waitForDisplayed({ timeout: 5000 });
   }
 
@@ -46,14 +46,12 @@ class CategoryPage {
     const cards = await this.productCards;
 
     if (cards.length > 0) {
-      assert.isAbove(cards.length, 0, "At least one product should be found");
+      assert.isAbove(cards.length, 0, 'At least one product should be found');
 
       for (const card of cards) {
-        const titleEl = await card.$(
-          '[data-test="product-name"], h5.card-title'
-        );
+        const titleEl = await card.$('[data-test="product-name"], h5.card-title');
         const visible = await titleEl.isDisplayed();
-        assert.isTrue(visible, "Product title should be visible");
+        assert.isTrue(visible, 'Product title should be visible');
       }
     } else {
       assert.isTrue(

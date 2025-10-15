@@ -1,16 +1,15 @@
-const { Given, When, Then } = require("@wdio/cucumber-framework");
-const { $, $$, expect, browser } = require("@wdio/globals");
-const { expectChai, assert } = require("../support/chai");
+const { Given, When, Then } = require('@wdio/cucumber-framework');
+const { expectChai, assert } = require('../support/chai');
 
-import {loginPage, productDetailsPage, homePage, categoryPage } from "../../po/pages";
-import { headerComponent } from "../../po/components/common";
+import { loginPage, productDetailsPage, homePage, categoryPage } from '../../po/pages';
+import { headerComponent } from '../../po/components/common';
 
 Given(/^user is on login page$/, async () => {
   await loginPage.open();
 });
 
 When(/^user enters a valid email$/, async () => {
-  await loginPage.emailInput.setValue("test@example.com");
+  await loginPage.emailInput.setValue('test@example.com');
 });
 
 When(/^user leaves the password field empty$/, async () => {
@@ -23,7 +22,7 @@ When(/^user clicks the login button$/, async () => {
 
 Then(/^an error message for missing password is displayed$/, async () => {
   const errorText = await loginPage.getErrorMessage();
-  expectChai(errorText).to.include("Password is required");
+  expectChai(errorText).to.include('Password is required');
 });
 
 Given(/^the user is on the product details page$/, async () => {
@@ -36,7 +35,7 @@ When(/^the user adds the product to the basket$/, async () => {
 
 Then(/^a confirmation toast is displayed$/, async () => {
   const text = await productDetailsPage.getToastText();
-  expectChai(text).to.include("product added to shopping cart");
+  expectChai(text).to.include('product added to shopping cart');
 });
 
 Then(/^the basket counter is incremented$/, async () => {
@@ -47,7 +46,7 @@ Then(/^the basket counter is incremented$/, async () => {
 });
 
 Given(/^the user is not signed in$/, async () => {
-  await browser.url("/");
+  await browser.url('/');
   await browser.deleteCookies();
   await browser.refresh();
 
@@ -61,10 +60,7 @@ When(/^the user add product to favourites$/, async () => {
 
 Then(/^the error toast is displayed$/, async () => {
   const text = await productDetailsPage.getToastText();
-  assert.include(
-    text,
-    "unauthorized, can not add product to your favorite list."
-  );
+  assert.include(text, 'unauthorized, can not add product to your favorite list.');
 });
 
 Given(/^the user is on the home page$/, async () => {
@@ -89,12 +85,9 @@ Then(/^the product information is visible$/, async () => {
   expectChai(await productDetailsPage.description.isDisplayed()).to.be.true;
 });
 
-When(
-  /^the user selects the "([^"]*)" category from the Categories menu$/,
-  async (category) => {
-    await headerComponent.selectCategory(category);
-  }
-);
+When(/^the user selects the "([^"]*)" category from the Categories menu$/, async (category) => {
+  await headerComponent.selectCategory(category);
+});
 
 Then(/^the category page for "([^"]*)" is displayed$/, async (category) => {
   await categoryPage.isCategoryDisplayed(category);
@@ -124,20 +117,17 @@ When(/^the user searches for non-existing "([^"]*)"$/, async (product) => {
   await homePage.search(product);
 });
 
-Then(/^a no results message "([^"]*)" is shown$/, async(message) => {
-	const results = await homePage.searchReults;
+Then(/^a no results message "([^"]*)" is shown$/, async (message) => {
+  const results = await homePage.searchReults;
   expectChai(results.length).to.equal(0);
 
   const text = await homePage.noResultsMsg.getText();
   assert.include(text, message, `Expected "${text}" to include "${message}"`);
 });
 
-When(
-  /^the user selects "([^"]*)" from the language dropdown$/,
-  async (lang) => {
-    await headerComponent.selectLang(lang);
-  }
-);
+When(/^the user selects "([^"]*)" from the language dropdown$/, async (lang) => {
+  await headerComponent.selectLang(lang);
+});
 
 Then(/^the language indicator shows "([^"]*)"$/, async (lang) => {
   const text = await headerComponent.getLangIndicatorText();
@@ -146,18 +136,16 @@ Then(/^the language indicator shows "([^"]*)"$/, async (lang) => {
 
 Then(/^the site content is displayed in "([^"]*)"$/, async (lang) => {
   const expectedTexts = {
-    DE: "Start",
-    EN: "Home",
-    ES: "Inicio",
-    FR: "Accueil",
-    NL: "Home",
-    TR: "Anasayfa",
+    DE: 'Start',
+    EN: 'Home',
+    ES: 'Inicio',
+    FR: 'Accueil',
+    NL: 'Home',
+    TR: 'Anasayfa',
   };
-  const homeLink = await $(`.nav-link.active`);
 
   await browser.waitUntil(
-    async () =>
-      (await headerComponent.getHomeLinkText()) === expectedTexts[lang],
+    async () => (await headerComponent.getHomeLinkText()) === expectedTexts[lang],
     {
       timeout: 5000,
       timeoutMsg: `Expected text: ${expectedTexts[lang]}`,

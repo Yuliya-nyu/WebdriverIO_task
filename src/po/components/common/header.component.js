@@ -6,10 +6,10 @@ class HeaderComponent {
     return $('//a[normalize-space()="Sign in"]');
   }
   get homeLink() {
-    return $(".nav-link.active");
+    return $('.nav-link.active');
   }
   get categoriesMenu() {
-    return $(".nav-link.dropdown-toggle");
+    return $('.nav-link.dropdown-toggle');
   }
   get langSelector() {
     return $('button[data-test="language-select"]');
@@ -30,7 +30,7 @@ class HeaderComponent {
     await browser.waitUntil(async () => (await this.getCartCount()) > before, {
       timeout: 5000,
       interval: 500,
-      timeoutMsg: "Cart counter did not increment",
+      timeoutMsg: 'Cart counter did not increment',
     });
     return await this.getCartCount();
   }

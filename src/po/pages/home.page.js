@@ -1,11 +1,11 @@
-import BasePage from "./base.page";
+import BasePage from './base.page';
 
 class HomePage extends BasePage {
   get firstProductLink() {
     return $('//a[contains(@href,"/product/")]');
   }
   get searchInput() {
-    return $("#search-query");
+    return $('#search-query');
   }
   get searchBtn() {
     return $('button[type="submit"]');
@@ -21,7 +21,7 @@ class HomePage extends BasePage {
   }
 
   async openFirstProduct() {
-    await this.open("/");
+    await this.open('/');
     await this.firstProductLink.click();
   }
 
