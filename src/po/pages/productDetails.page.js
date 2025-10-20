@@ -1,24 +1,24 @@
 class ProductDetailsPage {
   get addBtn() {
-    return $("#btn-add-to-cart");
+    return $('#btn-add-to-cart');
   }
   get toastMsg() {
     return $('#toast-container .toast-message[role="alert"]');
   }
   get addToFavBtn() {
-    return $("#btn-add-to-favorites");
+    return $('#btn-add-to-favorites');
   }
   get productName() {
     return $('h1[data-test="product-name"]');
   }
   get productImg() {
-    return $(".figure-img.img-fluid");
+    return $('.figure-img.img-fluid');
   }
   get unitPrice() {
     return $('span[aria-label="unit-price"]');
   }
   get description() {
-    return $("#description");
+    return $('#description');
   }
 
   async waitForProductDetails() {
@@ -39,7 +39,7 @@ class ProductDetailsPage {
 
   async isOpened() {
     const url = await browser.getUrl();
-    return url.includes("product");
+    return url.includes('product');
   }
 }
 
