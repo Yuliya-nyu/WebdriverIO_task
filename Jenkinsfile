@@ -20,8 +20,8 @@ pipeline {
 
         stage('Run UI tests') {
             steps {
-                echo 'Running tests...'
-                sh 'npm run test'
+                echo 'Running all UI tests using @ui tag...'
+                sh 'npm run test:ui'
             }
         }
     }

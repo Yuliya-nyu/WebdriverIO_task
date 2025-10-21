@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "wdio run ./src/config/wdio.conf.js",
+    "test:ui": "wdio run ./src/config/wdio.conf.js --cucumberOpts.tagExpression '@ui'",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier:check": "prettier --check .",
